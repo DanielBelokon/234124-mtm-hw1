@@ -19,14 +19,53 @@ struct AmountSet_t
     AmountSetNode first;
 };
 
+/**
+ * asFreeNode: Frees a specific node's resources.
+ * 
+ * The node's and it's element's memory will be released, 
+ * Adjacent nodes and the set's pointer will be untouched. 
+ * 
+ * @param node - The AmountSetNode to be released.
+ * 
+ * 
+ * **/
 void asFreeNode(AmountSetNode node);
-// find an item (sets iterator to it's location)
+
+/**
+ * asFindNode: Set the iterator to the node containing a specific element.
+ * 
+ * Iterator value is set to the node containing the element if found,
+ * The iterator is undefined if the element is not found.
+ * 
+ * @param set The set to search in.
+ * @param element The element to match.
+ * @return
+ *      AS_NULL_ARGUMENT - if a NULL argument was passed,
+ *      AS_ITEM_DOES_NOT_EXIST - if the element doesn't exist in the set.
+ *      AS_SUCCESS - if the element was found and the node set.
+ * **/
 AmountSetResult asFindNode(AmountSet set, const char *element);
+
+/**
+ * asFindPrecedingNode: Set the iterator to the node containing a specific element, and find the preceding node.
+ * 
+ * Iterator value is set to the node containing the element if found,
+ * The iterator is undefined if the element is not found.
+ * The preceding node pointer is set to the node preceding the node that contains the element, if found.
+ * 
+ * @param set The set to search in.
+ * @param element The element to match.
+ * @param preceding_node The variable to return the result in.
+ * @return
+ *      AS_NULL_ARGUMENT - if a NULL argument was passed,
+ *      AS_ITEM_DOES_NOT_EXIST - if the element doesn't exist in the set.
+ *      AS_SUCCESS - if the element was found and the node set.
+ * **/
 AmountSetResult asFindPrecedingNode(AmountSet set, const char *element, AmountSetNode *preceding_node);
 
 AmountSet asCreate()
 {
-    AmountSet new_set = malloc(sizeof(struct AmountSet_t));
+    AmountSet new_set = malloc(sizeof(*new_set));
 
     if (new_set == NULL)
         return NULL;
@@ -111,7 +150,7 @@ AmountSetResult asRegister(AmountSet set, const char *element)
         return AS_NULL_ARGUMENT;
 
     int compare_result = 0;
-    AmountSetNode previous_pos = set->first;
+    AmountSetNode previous_pos = NULL;
 
     // Find next position by order
     AS_FOREACH(char *, current_element, set)
@@ -125,7 +164,7 @@ AmountSetResult asRegister(AmountSet set, const char *element)
         previous_pos = set->current_node;
     }
 
-    AmountSetNode new_node = malloc(sizeof(struct AmountSetNode_t));
+    AmountSetNode new_node = malloc(sizeof(*new_node));
     if (!new_node)
         return AS_OUT_OF_MEMORY;
 
@@ -134,20 +173,25 @@ AmountSetResult asRegister(AmountSet set, const char *element)
         return AS_OUT_OF_MEMORY;
 
     strcpy(new_element, element);
+    new_node->amount = 0;
+    new_node->element = new_element;
 
     if (set->first == NULL)
         set->first = new_node;
 
-    new_node->amount = 0;
-    new_node->element = new_element;
     new_node->next = NULL;
-    set->current_node = new_node;
 
     if (previous_pos != NULL)
     {
         new_node->next = previous_pos->next;
         previous_pos->next = new_node;
     }
+    else
+    {
+        new_node->next = set->current_node;
+        set->first = new_node;
+    }
+
     set->size++;
     return AS_SUCCESS;
 }
@@ -249,7 +293,7 @@ void asFreeNode(AmountSetNode node)
 
 AmountSetResult asFindNode(AmountSet set, const char *element)
 {
-    AmountSetNode *preceding_node = NULL;
+    AmountSetNode *preceding_node;
     return asFindPrecedingNode(set, element, preceding_node);
 }
 
@@ -260,13 +304,16 @@ AmountSetResult asFindPrecedingNode(AmountSet set, const char *element, AmountSe
 
     AmountSetResult operation_result = AS_ITEM_DOES_NOT_EXIST;
     preceding_node = NULL;
+    int compare_result = 1;
     AS_FOREACH(char *, current_element, set)
     {
-        if (!strcmp(current_element, element))
+        if ((compare_result = strcmp(current_element, element)) == 0)
         {
             operation_result = AS_SUCCESS;
             break;
         }
+        else if (compare_result > 0) // Passed the element
+            break;
         if (set->current_node != NULL)
             preceding_node = &(set->current_node);
     }
