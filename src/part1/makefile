@@ -1,5 +1,5 @@
 CC = gcc
-OBJS = amount_set_str.o tests_amount_set_st.o
+OBJS = amount_set_str.o amount_set_str_test.o
 EXEC = AmountSet
 DEBUG_FLAG = -g
 COMP_FLAG = -std=c99 -Wall -Werror
@@ -8,7 +8,7 @@ $(EXEC) : $(OBJS)
 	$(CC) $(DEBUG_FLAG) $(OBJS) -o $@
 amount_set_str.o: amount_set_str.c amount_set_str.h
 	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $*.c
-tests_amount_set_st.o: tests_amount_set_st.c amount_set_str.h
+amount_set_str_test.o: amount_set_str_test.c amount_set_str.h
 	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $*.c
 
 clean:
