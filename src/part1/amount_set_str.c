@@ -83,7 +83,6 @@ void asDestroy(AmountSet set)
         return;
 
     asClear(set);
-
     free(set);
 }
 
@@ -93,21 +92,15 @@ AmountSet asCopy(AmountSet set)
         return NULL;
 
     AmountSet new_set = asCreate();
-
     AS_FOREACH(char *, current_element, set)
     {
-        char *new_element = malloc((strlen(current_element) + 1) * sizeof(char));
-
-        if (!new_element)
+        if (asRegister(new_set, current_element))
         {
             asDestroy(new_set);
             return NULL;
         }
-
-        asRegister(new_set, strcpy(new_element, current_element));
     };
 
-    new_set->size = set->size;
     return new_set;
 }
 
@@ -149,7 +142,6 @@ AmountSetResult asRegister(AmountSet set, const char *element)
     if (!set || !element)
         return AS_NULL_ARGUMENT;
 
-    int compare_result = 0;
     AmountSetNode preceding_node = NULL;
     if (asFindPrecedingNode(set, element, &preceding_node) == AS_SUCCESS)
         return AS_ITEM_ALREADY_EXISTS;
@@ -160,8 +152,10 @@ AmountSetResult asRegister(AmountSet set, const char *element)
 
     char *new_element = malloc((strlen(element) + 1) * sizeof(char));
     if (!new_element)
+    {
+        free(new_node);
         return AS_OUT_OF_MEMORY;
-
+    }
     strcpy(new_element, element);
     new_node->amount = 0;
     new_node->element = new_element;
@@ -212,13 +206,9 @@ AmountSetResult asDelete(AmountSet set, const char *element)
         return AS_ITEM_DOES_NOT_EXIST;
 
     if (preceding_node != NULL)
-    {
         preceding_node->next = set->current_node->next;
-    }
     else
-    {
         set->first = set->current_node->next;
-    }
 
     asFreeNode(set->current_node);
     set->current_node = set->first;
@@ -270,7 +260,6 @@ void asFreeNode(AmountSetNode node)
         return;
 
     free(node->element);
-    node->element = NULL;
     free(node);
 
     return;
@@ -288,7 +277,6 @@ AmountSetResult asFindPrecedingNode(AmountSet set, const char *element, AmountSe
         return AS_NULL_ARGUMENT;
 
     AmountSetResult operation_result = AS_ITEM_DOES_NOT_EXIST;
-    preceding_node = NULL;
     int compare_result = 1;
     AS_FOREACH(char *, current_element, set)
     {
@@ -300,7 +288,7 @@ AmountSetResult asFindPrecedingNode(AmountSet set, const char *element, AmountSe
         else if (compare_result > 0) // Passed the element
             break;
         if (set->current_node != NULL)
-            preceding_node = &(set->current_node);
+            *preceding_node = set->current_node;
     }
 
     return operation_result;
