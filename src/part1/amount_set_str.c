@@ -67,7 +67,7 @@ AmountSet asCreate()
 {
     AmountSet new_set = malloc(sizeof(*new_set));
 
-    if (new_set == NULL)
+    if (!new_set)
         return NULL;
 
     new_set->size = 0;
@@ -218,7 +218,7 @@ AmountSetResult asDelete(AmountSet set, const char *element)
 
 AmountSetResult asClear(AmountSet set)
 {
-    if (set == NULL)
+    if (!set)
         return AS_NULL_ARGUMENT;
 
     AmountSetNode next_node, current_node = set->first;
@@ -243,7 +243,7 @@ char *asGetFirst(AmountSet set)
 
 char *asGetNext(AmountSet set)
 {
-    if (!set || set->current_node == NULL)
+    if (!set || !(set->current_node))
         return NULL;
 
     if (set->current_node->next != NULL)
@@ -256,7 +256,7 @@ char *asGetNext(AmountSet set)
 
 void asFreeNode(AmountSetNode node)
 {
-    if (node == NULL)
+    if (!node)
         return;
 
     free(node->element);
