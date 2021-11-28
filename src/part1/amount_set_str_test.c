@@ -334,7 +334,48 @@ bool testGetNext()
 bool testOrdered()
 {
     bool passed = true;
+    AmountSet set = asCreate();
+    char *entries[] = {"zzz", "aaa", "azz", "AAA", "ZZZ", "aAa", "000", ".25", "$#@"};
 
+    char *ordered_entries[] = {
+        "$#@",
+        ".25",
+        "000",
+        "AAA",
+        "ZZZ",
+        "aAa",
+        "aaa",
+        "azz",
+        "zzz",
+    };
+    for (int i = 0; i < 9; i++)
+    {
+        asRegister(set, entries[i]);
+    }
+    int i = 0;
+    AS_FOREACH(char *, element, set)
+    {
+        if (strcmp(element, ordered_entries[i]))
+            passed = false;
+        i++;
+    }
+
+    if (!passed)
+    {
+        printf("\nCurrent order: \n");
+        AS_FOREACH(char *, element, set)
+        {
+            printf("%s, ", element);
+        }
+
+        printf("\nexpected order: \n");
+        for (int i = 0; i < 9; i++)
+        {
+            printf("%s, ", ordered_entries[i]);
+        }
+
+        printf("\n");
+    }
     return passed;
 }
 
