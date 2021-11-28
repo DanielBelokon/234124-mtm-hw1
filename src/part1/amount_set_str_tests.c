@@ -3,23 +3,6 @@
 #include <stdbool.h>
 #include "string.h"
 
-#define RUN_TEST(test)                             \
-    do                                             \
-    {                                              \
-        printf("Running %-20s", #test "... ");     \
-        printf("\033[1m\033[31m");                 \
-        if (test())                                \
-        {                                          \
-            printf("\033[0m[OK]");                 \
-        }                                          \
-        else                                       \
-        {                                          \
-            printf("\033[1m\033[31m%-26s", #test); \
-            printf("[FAIL]\033[0m");               \
-        }                                          \
-        printf("\033[0m\n");                       \
-    } while (0)
-
 AmountSet CreateDummy(int items);
 
 bool testCreate()
@@ -379,7 +362,7 @@ bool testOrdered()
     return passed;
 }
 
-AmountSet CreateDummy(int items)
+static AmountSet CreateDummy(int items)
 {
     AmountSet set = asCreate();
     for (int i = 1; i <= items; i++)
@@ -390,22 +373,4 @@ AmountSet CreateDummy(int items)
     }
 
     return set;
-}
-
-int main()
-{
-    RUN_TEST(testCreate);
-    RUN_TEST(testDestroy);
-    RUN_TEST(testCopy);
-    RUN_TEST(testGetSize);
-    RUN_TEST(testContains);
-    RUN_TEST(testGetAmount);
-    RUN_TEST(testRegister);
-    RUN_TEST(testChangeAmount);
-    RUN_TEST(testDelete);
-    RUN_TEST(testClear);
-    RUN_TEST(testGetFirst);
-    RUN_TEST(testGetNext);
-    RUN_TEST(testOrdered);
-    return 0;
 }
