@@ -228,7 +228,10 @@ AmountSetResult asClear(AmountSet set)
         asFreeNode(current_node);
         current_node = next_node;
     }
+
     set->size = 0;
+    set->first = NULL;
+    set->current_node = NULL;
     return AS_SUCCESS;
 }
 
