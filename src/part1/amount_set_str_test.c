@@ -3,19 +3,21 @@
 #include <stdbool.h>
 #include "string.h"
 
-#define RUN_TEST(test)                                                \
-    do                                                                \
-    {                                                                 \
-        printf("Running %-20s", #test "... ");                        \
-        if (test())                                                   \
-        {                                                             \
-            printf("[OK]");                                           \
-        }                                                             \
-        else                                                          \
-        {                                                             \
-            printf("\033[1m\033[31m" #test "%-16s", "[FAIL]\033[0m"); \
-        }                                                             \
-        printf("\n");                                                 \
+#define RUN_TEST(test)                             \
+    do                                             \
+    {                                              \
+        printf("Running %-20s", #test "... ");     \
+        printf("\033[1m\033[31m");                 \
+        if (test())                                \
+        {                                          \
+            printf("\033[0m[OK]");                 \
+        }                                          \
+        else                                       \
+        {                                          \
+            printf("\033[1m\033[31m%-26s", #test); \
+            printf("[FAIL]\033[0m");               \
+        }                                          \
+        printf("\033[0m\n");                       \
     } while (0)
 
 AmountSet CreateDummy(int items);
@@ -24,30 +26,30 @@ bool testCreate()
 {
     AmountSet set = asCreate();
 
-    bool result = true;
+    bool passed = true;
     if (set == NULL)
-        result = false;
+        passed = false;
 
     if (asGetFirst(set) != NULL)
     {
-        printf("\nFirst not set to NULL\n");
-        result = false;
+        printf("First not set to NULL\n");
+        passed = false;
     }
 
     if (asGetNext(set) != NULL)
     {
-        printf("\nNext not set to NULL\n");
-        result = false;
+        printf("Next not set to NULL\n");
+        passed = false;
     }
 
     if (asGetSize(set) != 0)
     {
-        printf("\nSize not set to 0\n");
-        result = false;
+        printf("Size not set to 0\n");
+        passed = false;
     }
 
     asDestroy(set);
-    return result;
+    return passed;
 }
 
 bool testDestroy()
@@ -63,12 +65,12 @@ bool testCopy()
 {
     AmountSet source_set = CreateDummy(5);
     AmountSet dest_set = asCopy(source_set);
-    bool result = true;
+    bool passed = true;
 
     if (asGetSize(dest_set) != asGetSize(source_set))
     {
         printf("Size mismatch.\n");
-        result = false;
+        passed = false;
     }
 
     AS_FOREACH(char *, item, source_set)
@@ -76,7 +78,7 @@ bool testCopy()
         if (!asContains(dest_set, item))
         {
             printf("Contents mismatch.\n");
-            result = false;
+            passed = false;
         }
 
         double source_amount, dest_amount;
@@ -86,64 +88,254 @@ bool testCopy()
         if (source_amount != dest_amount)
         {
             printf("Amount mismatch.\n");
-            result = false;
+            passed = false;
         }
     }
 
     asDestroy(source_set);
 
     asDestroy(dest_set);
-    return result;
+    return passed;
 }
 
 bool testGetSize()
 {
-    return true;
+    bool passed = true;
+    AmountSet set = asCreate();
+
+    if (asGetSize(set) != 0)
+    {
+        printf("Initiale size not 0.\n");
+        passed = false;
+    }
+
+    asRegister(set, "Item 1");
+    asRegister(set, "Item 2");
+
+    if (asGetSize(set) != 2)
+    {
+        printf("Post-register size incorrect.\n");
+        passed = false;
+    }
+
+    asDelete(set, "Item 1");
+
+    if (asGetSize(set) != 1)
+    {
+        printf("Post-delete size incorrect.\n");
+        passed = false;
+    }
+
+    asClear(set);
+
+    if (asGetSize(set) != 0)
+    {
+        printf("Post-clear size incorrect.\n");
+        passed = false;
+    }
+
+    if (asDestroy)
+
+        return passed;
 }
 
 bool testContains()
 {
-    return true;
+    bool passed = true;
+    AmountSet set = CreateDummy(3);
+
+    if (!asContains(set, "Item 1"))
+    {
+        passed = false;
+        printf("Incorrect result in contains.\n");
+    }
+
+    asDelete(set, "Item 1");
+
+    if (asContains(set, "Item 1"))
+    {
+        passed = false;
+        printf("Incorrect result in contains post delete.\n");
+    }
+
+    return passed;
 }
 
 bool testGetAmount()
 {
-    return true;
+    bool passed = true;
+    double amount = -1;
+
+    AmountSet set = CreateDummy(3);
+
+    AmountSetResult operation_result;
+
+    if ((operation_result = asGetAmount(set, "Item 1", &amount)) != AS_SUCCESS)
+    {
+        printf("asGetAmount failed on execute with error: %s\n", operation_result);
+        passed = false;
+    }
+
+    if (amount != 0)
+    {
+        printf("Incorrect initial amount.\n");
+        passed = false;
+    }
+
+    amount = -1;
+
+    asChangeAmount(set, "Item 1", 3);
+
+    if ((operation_result = asGetAmount(set, "Item 1", &amount)) != AS_SUCCESS)
+    {
+        printf("asGetAmount failed on execute with error: %s\n", operation_result);
+        passed = false;
+    }
+
+    if (amount != 3)
+    {
+        printf("Incorrect post-update amount.\n");
+        passed = false;
+    }
+
+    asChangeAmount(set, "Item 1", -2);
+
+    if ((operation_result = asGetAmount(set, "Item 1", &amount)) != AS_SUCCESS)
+    {
+        printf("asGetAmount failed on execute with error: %s\n", operation_result);
+        passed = false;
+    }
+
+    if (amount != 1)
+    {
+        printf("Incorrect post-update negative amount.\n");
+        passed = false;
+    }
+
+    asDestroy(set);
+    return passed;
 }
 
 bool testRegister()
 {
-    return true;
+    bool passed = true;
+
+    return passed;
 }
 
 bool testChangeAmount()
 {
-    return true;
+    bool passed = true;
+    double amount = -1;
+
+    AmountSet set = CreateDummy(3);
+
+    asChangeAmount(set, "Item 1", 3);
+    asGetAmount(set, "Item 1", &amount);
+    if (amount != 3)
+    {
+        printf("Incorrect post-update amount, now %lf instead of 3.\n", amount);
+        passed = false;
+    }
+
+    asChangeAmount(set, "Item 1", -2);
+    asGetAmount(set, "Item 1", &amount);
+    if (amount != 1)
+    {
+        printf("Incorrect post-update negative amount, now %lf instead of 1.\n", amount);
+        passed = false;
+    }
+
+    if (asChangeAmount(set, "Item 1", -2) != AS_INSUFFICIENT_AMOUNT)
+    {
+        printf("Incorrect or no error on insufficient amount.\n");
+        passed = false;
+    }
+
+    if (amount != 1)
+    {
+        printf("Amount changed after insufficient amount, now %lf instead of 1.\n", amount);
+        passed = false;
+    }
+
+    asDestroy(set);
+    return passed;
 }
 
 bool testDelete()
 {
-    return true;
+    bool passed = true;
+    AmountSet set = CreateDummy(3);
+    AmountSetResult operation_result;
+
+    if ((operation_result = asDelete(set, "Item 2")) != AS_SUCCESS)
+    {
+        printf("asDelete failed on execute with error: %s\n", operation_result);
+        passed = false;
+    }
+
+    if (asContains(set, "Item 2"))
+    {
+        printf("Set still contains deleted item.\n");
+        passed = false;
+    }
+
+    if ((operation_result = asDelete(set, "Item 2")) != AS_ITEM_DOES_NOT_EXIST)
+    {
+        printf("asDelete returned incorrect error: %s, instead of AS_ITEM_DOES_NOT_EXIST\n", operation_result);
+        passed = false;
+    }
+
+    asDestroy(set);
+    return passed;
 }
 
 bool testClear()
 {
-    return true;
+    bool passed = true;
+    AmountSet set = CreateDummy(5);
+    AmountSetResult operation_result;
+    if ((operation_result = asClear(set)) != AS_SUCCESS)
+    {
+        printf("asClear failed on execute with error: %s\n", operation_result);
+        passed = false;
+    }
+
+    if (asGetSize(set) != 0)
+    {
+        printf("Set size is not zero.\n");
+        passed = false;
+    }
+
+    if (asGetFirst(set) != NULL)
+    {
+        printf("First item is not NULL.\n");
+        passed = false;
+    }
+
+    asDestroy(set);
+    return passed;
 }
 
 bool testGetFirst()
 {
-    return true;
+    bool passed = true;
+
+    return passed;
 }
 
 bool testGetNext()
 {
-    return true;
+    bool passed = true;
+
+    return passed;
 }
 
 bool testOrdered()
 {
-    return true;
+    bool passed = true;
+
+    return passed;
 }
 
 AmountSet CreateDummy(int items)
