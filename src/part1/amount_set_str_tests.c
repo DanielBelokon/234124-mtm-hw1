@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include "amount_set_str.h"
+#include "amount_set_str_tests.h"
 #include <stdbool.h>
 #include "string.h"
 
-AmountSet CreateDummy(int items);
+static AmountSet CreateDummy(int items);
 
 bool testCreate()
 {
@@ -38,10 +39,12 @@ bool testCreate()
 bool testDestroy()
 {
     AmountSet set = CreateDummy(4);
-
+    bool passed = true;
     asDestroy(set);
+    asDestroy(NULL);
     // not much to verify from inside the prog...
-    return true;
+
+    return passed;
 }
 
 bool testCopy()
@@ -117,9 +120,9 @@ bool testGetSize()
         passed = false;
     }
 
-    if (asDestroy)
+    asDestroy(set);
 
-        return passed;
+    return passed;
 }
 
 bool testContains()
@@ -155,7 +158,7 @@ bool testGetAmount()
 
     if ((operation_result = asGetAmount(set, "Item 1", &amount)) != AS_SUCCESS)
     {
-        printf("asGetAmount failed on execute with error: %s\n", operation_result);
+        printf("asGetAmount failed on execute with error: %d\n", operation_result);
         passed = false;
     }
 
@@ -171,7 +174,7 @@ bool testGetAmount()
 
     if ((operation_result = asGetAmount(set, "Item 1", &amount)) != AS_SUCCESS)
     {
-        printf("asGetAmount failed on execute with error: %s\n", operation_result);
+        printf("asGetAmount failed on execute with error: %d\n", operation_result);
         passed = false;
     }
 
@@ -185,7 +188,7 @@ bool testGetAmount()
 
     if ((operation_result = asGetAmount(set, "Item 1", &amount)) != AS_SUCCESS)
     {
-        printf("asGetAmount failed on execute with error: %s\n", operation_result);
+        printf("asGetAmount failed on execute with error: %d\n", operation_result);
         passed = false;
     }
 
@@ -253,7 +256,7 @@ bool testDelete()
 
     if ((operation_result = asDelete(set, "Item 2")) != AS_SUCCESS)
     {
-        printf("asDelete failed on execute with error: %s\n", operation_result);
+        printf("asDelete failed on execute with error: %d\n", operation_result);
         passed = false;
     }
 
@@ -265,7 +268,7 @@ bool testDelete()
 
     if ((operation_result = asDelete(set, "Item 2")) != AS_ITEM_DOES_NOT_EXIST)
     {
-        printf("asDelete returned incorrect error: %s, instead of AS_ITEM_DOES_NOT_EXIST\n", operation_result);
+        printf("asDelete returned incorrect error: %d, instead of AS_ITEM_DOES_NOT_EXIST\n", operation_result);
         passed = false;
     }
 
@@ -280,7 +283,7 @@ bool testClear()
     AmountSetResult operation_result;
     if ((operation_result = asClear(set)) != AS_SUCCESS)
     {
-        printf("asClear failed on execute with error: %s\n", operation_result);
+        printf("asClear failed on execute with error: %d\n", operation_result);
         passed = false;
     }
 
