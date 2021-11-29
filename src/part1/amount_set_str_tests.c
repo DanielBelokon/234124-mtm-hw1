@@ -144,6 +144,8 @@ bool testContains()
         printf("Incorrect result in contains post delete.\n");
     }
 
+    asDestroy(set);
+
     return passed;
 }
 
@@ -362,6 +364,8 @@ bool testOrdered()
 
         printf("\n");
     }
+
+    asDestroy(set);
     return passed;
 }
 
