@@ -1,6 +1,6 @@
 CC = gcc
 OBJS = amount_set_str.o amount_set_str_tests.o amount_set_str_main.o
-EXEC = AmountSet
+EXEC = AmountSet.exe
 DEBUG_FLAG = -g
 COMP_FLAG = -std=c99 -Wall -Werror
 
