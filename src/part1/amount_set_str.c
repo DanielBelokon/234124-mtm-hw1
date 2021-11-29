@@ -29,7 +29,7 @@ struct AmountSet_t
  * 
  * 
  * **/
-void asFreeNode(AmountSetNode node);
+static void asFreeNode(AmountSetNode node);
 
 /**
  * asFindNode: Set the iterator to the node containing a specific element.
@@ -44,7 +44,7 @@ void asFreeNode(AmountSetNode node);
  *      AS_ITEM_DOES_NOT_EXIST - if the element doesn't exist in the set.
  *      AS_SUCCESS - if the element was found and the node set.
  * **/
-AmountSetResult asFindNode(AmountSet set, const char *element);
+static AmountSetResult asFindNode(AmountSet set, const char *element);
 
 /**
  * asFindPrecedingNode: Set the iterator to the node containing a specific element, and find the preceding node.
@@ -61,7 +61,7 @@ AmountSetResult asFindNode(AmountSet set, const char *element);
  *      AS_ITEM_DOES_NOT_EXIST - if the element doesn't exist in the set.
  *      AS_SUCCESS - if the element was found and the node set.
  * **/
-AmountSetResult asFindPrecedingNode(AmountSet set, const char *element, AmountSetNode *preceding_node);
+static AmountSetResult asFindPrecedingNode(AmountSet set, const char *element, AmountSetNode *preceding_node);
 
 AmountSet asCreate()
 {
@@ -101,6 +101,8 @@ AmountSet asCopy(AmountSet set)
         }
     };
 
+    set->current_node = NULL;
+    new_set->current_node = NULL;
     return new_set;
 }
 
@@ -127,13 +129,13 @@ bool asContains(AmountSet set, const char *element)
 AmountSetResult asGetAmount(AmountSet set, const char *element, double *outAmount)
 {
     AmountSetResult operation_result;
-
+    AmountSetNode last_position = set->current_node;
     if ((operation_result = asFindNode(set, element)) == AS_SUCCESS)
     {
         assert(set->current_node);
         *outAmount = set->current_node->amount;
     }
-
+    set->current_node = last_position;
     return operation_result;
 }
 
@@ -171,6 +173,7 @@ AmountSetResult asRegister(AmountSet set, const char *element)
         set->first = new_node;
     }
 
+    set->current_node = NULL;
     set->size++;
     return AS_SUCCESS;
 }
@@ -211,7 +214,7 @@ AmountSetResult asDelete(AmountSet set, const char *element)
         set->first = set->current_node->next;
 
     asFreeNode(set->current_node);
-    set->current_node = set->first;
+    set->current_node = NULL;
     set->size--;
     return AS_SUCCESS;
 }
@@ -257,7 +260,7 @@ char *asGetNext(AmountSet set)
     return set->current_node->element;
 }
 
-void asFreeNode(AmountSetNode node)
+static void asFreeNode(AmountSetNode node)
 {
     if (!node)
         return;
@@ -268,13 +271,13 @@ void asFreeNode(AmountSetNode node)
     return;
 }
 
-AmountSetResult asFindNode(AmountSet set, const char *element)
+static AmountSetResult asFindNode(AmountSet set, const char *element)
 {
     AmountSetNode preceding_node;
     return asFindPrecedingNode(set, element, &preceding_node);
 }
 
-AmountSetResult asFindPrecedingNode(AmountSet set, const char *element, AmountSetNode *preceding_node)
+static AmountSetResult asFindPrecedingNode(AmountSet set, const char *element, AmountSetNode *preceding_node)
 {
     if (!set || !element)
         return AS_NULL_ARGUMENT;
