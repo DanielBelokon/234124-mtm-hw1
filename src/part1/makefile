@@ -1,8 +1,8 @@
 CC = gcc
 OBJS = amount_set_str.o amount_set_str_tests.o amount_set_str_main.o
-EXEC = AmountSet.exe
+EXEC = str_set_amount
 DEBUG_FLAG = -g
-COMP_FLAG = -std=c99 -Wall -Werror
+COMP_FLAG = -std=c99 -Wall -Werror -pedantic-errors
 
 $(EXEC) : $(OBJS)
 	$(CC) $(DEBUG_FLAG) $(OBJS) -o $@
