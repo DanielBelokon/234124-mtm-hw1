@@ -1,6 +1,7 @@
 #ifndef MATAMIKYA_PRODUCT_H_
 #define MATAMIKYA_PRODUCT_H_
 
+#include "matamikya.h"
 #define PRODUCT_NULL_ARG -1;
 
 typedef struct Product_t *Product;
