@@ -2,11 +2,15 @@
 #include "matamikya_order.h"
 #include "amount_set.h"
 
-Order orderCopy(Order from, int new_id)
+void *orderCopy(void *from)
 {
 }
 
-Order orderDelete(Order order)
+void *orderDelete(void *order)
+{
+}
+
+int orderCompare(void *order1, void *order2)
 {
 }
 
