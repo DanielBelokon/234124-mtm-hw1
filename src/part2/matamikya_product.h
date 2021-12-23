@@ -1,6 +1,8 @@
 #ifndef MATAMIKYA_PRODUCT_H_
 #define MATAMIKYA_PRODUCT_H_
 
+#define PRODUCT_NULL_ARG -1;
+
 typedef struct Product_t *Product;
 struct Product_t
 {
@@ -9,6 +11,7 @@ struct Product_t
     MatamikyaAmountType amountType;
     MtmProductData customData;
     int amount;
+    int profit;
 
     MtmCopyData copyProdData;
     MtmFreeData freeProdData;
@@ -24,7 +27,5 @@ Product productCreate(const unsigned int id, const char *name,
 int productCompare(void *, void *);
 int productGetId(Product product);
 int productGetProfit(Product product);
-int productAddItem(Product product, int id);
-int productRemoveItem(Product product, int id);
 
 #endif
