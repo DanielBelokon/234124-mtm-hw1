@@ -2,12 +2,6 @@
 #include "matamikya_order.h"
 #include "amount_set.h"
 
-struct Order_t
-{
-    unsigned int id;
-    AmountSet product_ids; // by ID
-};
-
 Order orderCopy(Order from, int new_id)
 {
 }

@@ -2,12 +2,19 @@
 #define MATAMIKYA_ORDER_H_
 
 typedef struct Order_t *Order;
-Order orderCopy(Order from, int new_id);
-Order orderDelete(Order order);
+struct Order_t
+{
+    unsigned int id;
+    AmountSet product_ids; // by ID
+};
+
+void *orderCopy(void *from);
+void orderDelete(void *order);
 Order orderCreate(int id);
-Order orderCompare(Order, Order);
+int orderCompare(void *, void *);
 int orderGetId(Order order);
 int orderAddItem(Order order, int id);
 int orderRemoveItem(Order order, int id);
+int orderChangeItemAmount(Order order, int id, double amount);
 
 #endif

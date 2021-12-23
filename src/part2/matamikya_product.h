@@ -2,11 +2,26 @@
 #define MATAMIKYA_PRODUCT_H_
 
 typedef struct Product_t *Product;
+struct Product_t
+{
+    unsigned int id;
+    char *name;
+    MatamikyaAmountType amountType;
+    MtmProductData customData;
+    int amount;
 
-Product productCopy(Product from, int new_id);
-Product productDelete(Product product);
-Product productCreate(int id);
-Product productCompare(Product, Product);
+    MtmCopyData copyProdData;
+    MtmFreeData freeProdData;
+    MtmGetProductPrice getProdPrice;
+};
+
+void *productCopy(void *from);
+void productDelete(void *product);
+Product productCreate(const unsigned int id, const char *name,
+                      const double amount, const MatamikyaAmountType amountType,
+                      const MtmProductData customData, MtmCopyData copyData,
+                      MtmFreeData freeData, MtmGetProductPrice prodPrice);
+int productCompare(void *, void *);
 int productGetId(Product product);
 int productGetProfit(Product product);
 int productAddItem(Product product, int id);
