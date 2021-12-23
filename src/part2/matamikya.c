@@ -41,11 +41,21 @@ Matamikya matamikyaCreate()
     if (new_matamikya == NULL)
         return NULL;
 
-    // TODO: Check for failures
-    new_matamikya->orders = setCreate(orderCopy, orderDelete, orderCompare);
-    new_matamikya->products = setCreate(productCopy, productDelete, productCompare);
+    Set orders = setCreate(orderCopy, orderDelete, orderCompare);
+    if (orders == NULL)
+        return NULL;
 
-    return MATAMIKYA_SUCCESS;
+    Set products = setCreate(productCopy, productDelete, productCompare);
+    if (products == NULL)
+    {
+        setDestroy(orders);
+        return NULL;
+    }
+
+    new_matamikya->orders = orders;
+    new_matamikya->products = products;
+
+    return new_matamikya;
 }
 
 void matamikyaDestroy(Matamikya matamikya)
