@@ -36,7 +36,7 @@ void orderDelete(void *order)
 
 int orderCompare(void *order1, void *order2)
 {
-    return (((Order)order1)->id == ((Order)order1)->id);
+    return (((Order)order1)->id == ((Order)order2)->id);
 }
 
 Order orderCreate(int id)
@@ -45,6 +45,8 @@ Order orderCreate(int id)
 
     order->id = id;
     order->products = asCreate(idCopy, free, idCompare);
+
+    return order;
 }
 
 int orderAddItem(Order order, int id)
@@ -53,6 +55,7 @@ int orderAddItem(Order order, int id)
         return ORDER_NULL_ARG;
 
     asRegister(order->products, &id);
+    return 0;
 }
 
 int orderRemoveItem(Order order, int id)
@@ -61,6 +64,7 @@ int orderRemoveItem(Order order, int id)
         return ORDER_NULL_ARG;
 
     asDelete(order->products, &id);
+    return 0;
 }
 
 int orderGetId(Order order)
@@ -69,4 +73,12 @@ int orderGetId(Order order)
         return ORDER_NULL_ARG;
 
     return order->id;
+}
+
+int orderChangeItemAmount(Order order, int id, double amount)
+{
+    if (order == NULL)
+        return ORDER_NULL_ARG;
+
+    return asChangeAmount(order->products, &(order->id), amount);
 }
