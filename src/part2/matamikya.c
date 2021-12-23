@@ -122,6 +122,11 @@ MatamikyaResult mtmClearProduct(Matamikya matamikya, const unsigned int id)
     if ((product = getProductById(matamikya, id)) == NULL)
         return MATAMIKYA_PRODUCT_NOT_EXIST;
 
+    SET_FOREACH(Order, order, matamikya->orders)
+    {
+        orderRemoveItem(order, id);
+    }
+
     if (!setRemove(matamikya->products, product))
         return -1;
 
