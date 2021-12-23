@@ -1,31 +1,72 @@
 #include <stdlib.h>
 #include "matamikya_order.h"
 #include "amount_set.h"
+#include "matamikya_product.h"
+
+int idCompare(void *a, void *b)
+{
+    return *(int *)a == *(int *)b;
+}
+
+void *idCopy(void *id)
+{
+    int *new_id = malloc(sizeof(int));
+    *new_id = *(int *)id;
+    return new_id;
+}
 
 void *orderCopy(void *from)
 {
+    if (from == NULL)
+        return NULL;
+
+    Order order = malloc(sizeof(*order));
+
+    order->id = ((Order)from)->id;
+    order->products = asCopy(((Order)from)->products);
+
+    return order;
 }
 
-void *orderDelete(void *order)
+void orderDelete(void *order)
 {
+    asDestroy(((Order)order)->products);
+    free(order);
 }
 
 int orderCompare(void *order1, void *order2)
 {
+    return (((Order)order1)->id == ((Order)order1)->id);
 }
 
 Order orderCreate(int id)
 {
+    Order order = malloc(sizeof(*order));
+
+    order->id = id;
+    order->products = asCreate(idCopy, free, idCompare);
 }
 
 int orderAddItem(Order order, int id)
 {
+    if (order == NULL)
+        return ORDER_NULL_ARG;
+
+    asRegister(order->products, &id);
 }
 
 int orderRemoveItem(Order order, int id)
 {
+    if (order == NULL)
+        return ORDER_NULL_ARG;
+
+    asDelete(order->products, &id);
 }
 
 int orderGetId(Order order)
 {
+    if (order == NULL)
+        return ORDER_NULL_ARG;
+
+    return order->id;
 }

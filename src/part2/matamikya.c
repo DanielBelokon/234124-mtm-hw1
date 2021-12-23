@@ -199,10 +199,10 @@ MatamikyaResult mtmShipOrder(Matamikya matamikya, const unsigned int orderId)
         return MATAMIKYA_ORDER_NOT_EXIST;
 
     // TODO: Keep warehouse unchanged if operation fails
-    AS_FOREACH(int *, product_id, order->product_ids)
+    AS_FOREACH(int *, product_id, order->products)
     {
         double amount_out = 0;
-        asGetAmount(order->product_ids, product_id, &amount_out);
+        asGetAmount(order->products, product_id, &amount_out);
         mtmChangeProductAmount(matamikya, *product_id, amount_out);
     }
 

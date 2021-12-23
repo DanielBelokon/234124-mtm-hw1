@@ -1,11 +1,13 @@
 #ifndef MATAMIKYA_ORDER_H_
 #define MATAMIKYA_ORDER_H_
 
+#define ORDER_NULL_ARG -1;
+
 typedef struct Order_t *Order;
 struct Order_t
 {
     unsigned int id;
-    AmountSet product_ids; // by ID
+    AmountSet products;
 };
 
 void *orderCopy(void *from);
