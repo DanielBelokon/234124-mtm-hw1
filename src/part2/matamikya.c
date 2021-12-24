@@ -150,7 +150,8 @@ MatamikyaResult mtmPrintBestSelling(Matamikya matamikya, FILE *output)
             profitable_product = product;
         }
     }
-
+    if (profitable_product == NULL)
+        return MATAMIKYA_OUT_OF_MEMORY;
     mtmPrintProductDetails(profitable_product->name, profitable_product->id, profitable_product->amount, 0, output);
 
     return MATAMIKYA_SUCCESS;
