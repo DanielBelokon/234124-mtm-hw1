@@ -38,7 +38,7 @@ void orderDelete(void *order)
 
 int orderCompare(void *order1, void *order2)
 {
-    return (((Order)order1)->id == ((Order)order2)->id);
+    return (((Order)order1)->id - ((Order)order2)->id);
 }
 
 Order orderCreate(int id)
