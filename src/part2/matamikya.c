@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include "matamikya.h"
-#include "amount_set.h"
 #include "matamikya_order.h"
-#include "set.h"
 #include "matamikya_product.h"
 #include "matamikya_print.h"
+#include "amount_set.h"
+#include "set.h"
 
 struct Matamikya_t
 {
