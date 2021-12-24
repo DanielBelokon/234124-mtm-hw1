@@ -162,11 +162,12 @@ unsigned int mtmCreateNewOrder(Matamikya matamikya)
 
     int index = matamikya->order_index++;
     Order order = orderCreate(index);
-    setAdd(matamikya->orders, order);
+    SetResult result = setAdd(matamikya->orders, order);
+    if (result == SET_SUCCESS)
+        return index;
 
-    orderDelete(order);
-
-    return index;
+    return 0;
+    // orderDelete(order);
 }
 
 MatamikyaResult mtmChangeProductAmountInOrder(Matamikya matamikya, const unsigned int orderId,
