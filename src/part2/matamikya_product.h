@@ -11,8 +11,8 @@ struct Product_t
     char *name;
     MatamikyaAmountType amountType;
     MtmProductData customData;
-    int amount;
-    int profit;
+    double amount;
+    double profit;
 
     MtmCopyData copyProdData;
     MtmFreeData freeProdData;
