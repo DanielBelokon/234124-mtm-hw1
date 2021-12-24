@@ -54,6 +54,7 @@ Matamikya matamikyaCreate()
 
     new_matamikya->orders = orders;
     new_matamikya->products = products;
+    new_matamikya->order_index = 1;
 
     return new_matamikya;
 }
