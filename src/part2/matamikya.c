@@ -15,10 +15,10 @@ struct Matamikya_t
 
 Product getProductById(Matamikya matamikya, int id)
 {
-    SET_FOREACH(Product, Product, matamikya->products)
+    SET_FOREACH(Product, product, matamikya->products)
     {
-        if (productGetId(Product) == id)
-            return Product;
+        if (productGetId(product) == id)
+            return product;
     }
 
     return NULL;
