@@ -212,6 +212,9 @@ MatamikyaResult mtmShipOrder(Matamikya matamikya, const unsigned int orderId)
         double amount_out = 0;
         asGetAmount(order->products, product_id, &amount_out);
         mtmChangeProductAmount(matamikya, *product_id, amount_out);
+
+        Product product = getProductById(matamikya, *product_id);
+        product->profit += product->getProdPrice(product->customData, amount_out);
     }
 
     return MATAMIKYA_SUCCESS;
@@ -234,10 +237,40 @@ MatamikyaResult mtmCancelOrder(Matamikya matamikya, const unsigned int orderId)
 
 MatamikyaResult mtmPrintOrder(Matamikya matamikya, const unsigned int orderId, FILE *output)
 {
-    return MATAMIKYA_NULL_ARGUMENT;
+    if (matamikya == NULL)
+        return MATAMIKYA_NULL_ARGUMENT;
+
+    Order order = getOrderById(matamikya, orderId);
+
+    if (order == NULL)
+        return MATAMIKYA_ORDER_NOT_EXIST;
+
+    mtmPrintOrderHeading(order->id, output);
+
+    double totalPrice = 0;
+    AS_FOREACH(int *, productId, order->products)
+    {
+        Product cur_product = getProductById(matamikya, *productId);
+
+        double amount = 0;
+        if (asGetAmount(order->products, productId, &amount) != AS_SUCCESS)
+            return MATAMIKYA_OUT_OF_MEMORY;
+        double product_price = cur_product->getProdPrice(cur_product->customData, amount);
+        totalPrice += product_price;
+        mtmPrintProductDetails(cur_product->name, cur_product->id, cur_product->amount, product_price, output);
+    }
+
+    mtmPrintOrderSummary(totalPrice, output);
+    return MATAMIKYA_SUCCESS;
 }
 
 MatamikyaResult mtmPrintInventory(Matamikya matamikya, FILE *output)
 {
-    return MATAMIKYA_NULL_ARGUMENT;
+    SET_FOREACH(Product, product, matamikya->products)
+    {
+        double product_price = product->getProdPrice(product->customData, product->amount);
+        mtmPrintProductDetails(product->name, product->id, product->amount, product_price, output);
+    }
+
+    return MATAMIKYA_SUCCESS;
 }
