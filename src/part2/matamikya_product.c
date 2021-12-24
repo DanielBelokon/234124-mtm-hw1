@@ -62,6 +62,7 @@ void productDelete(void *product)
     cur_product->freeProdData(cur_product->customData);
     free(cur_product->name);
 
+    free(product);
     return;
 }
 

@@ -45,11 +45,15 @@ Matamikya matamikyaCreate()
 
     List orders = listCreate(orderCopy, orderDelete);
     if (orders == NULL)
+    {
+        free(new_matamikya);
         return NULL;
+    }
 
     List products = listCreate(productCopy, productDelete);
     if (products == NULL)
     {
+        free(new_matamikya);
         listDestroy(orders);
         return NULL;
     }
@@ -66,9 +70,12 @@ void matamikyaDestroy(Matamikya matamikya)
     if (matamikya == NULL)
         return;
 
+    listClear(matamikya->products);
+    listClear(matamikya->orders);
     listDestroy(matamikya->products);
     listDestroy(matamikya->orders);
 
+    free(matamikya);
     return;
 }
 
@@ -165,12 +172,15 @@ unsigned int mtmCreateNewOrder(Matamikya matamikya)
 
     int index = matamikya->order_index++;
     Order order = orderCreate(index);
-    ListResult result = listInsertLast(matamikya->orders, order);
-    if (result == LIST_SUCCESS)
-        return index;
+    if (order == NULL)
+        return 0;
 
-    return 0;
-    // orderDelete(order);
+    ListResult result = listInsertLast(matamikya->orders, order);
+    if (result != LIST_SUCCESS)
+        return 0;
+
+    orderDelete(order);
+    return index;
 }
 
 MatamikyaResult mtmChangeProductAmountInOrder(Matamikya matamikya, const unsigned int orderId,

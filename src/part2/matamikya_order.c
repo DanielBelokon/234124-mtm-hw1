@@ -21,6 +21,8 @@ void *orderCopy(void *from)
         return NULL;
 
     Order order = malloc(sizeof(*order));
+    if (order == NULL)
+        return NULL;
 
     order->id = ((Order)from)->id;
     order->products = asCopy(((Order)from)->products);
@@ -32,6 +34,8 @@ void orderDelete(void *order)
 {
     if (order == NULL)
         return;
+
+    asClear(((Order)order)->products);
     asDestroy(((Order)order)->products);
     free(order);
 }
@@ -44,9 +48,16 @@ int orderCompare(void *order1, void *order2)
 Order orderCreate(unsigned int id)
 {
     Order order = malloc(sizeof(*order));
+    if (order == NULL)
+        return NULL;
 
     order->id = id;
     order->products = asCreate(idCopy, free, idCompare);
+    if (order->products == NULL)
+    {
+        free(order);
+        return NULL;
+    }
 
     return order;
 }
