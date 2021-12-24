@@ -30,6 +30,8 @@ void *orderCopy(void *from)
 
 void orderDelete(void *order)
 {
+    if (order == NULL)
+        return;
     asDestroy(((Order)order)->products);
     free(order);
 }
