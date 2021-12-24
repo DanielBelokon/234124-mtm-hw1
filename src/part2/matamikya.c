@@ -229,3 +229,8 @@ MatamikyaResult mtmPrintOrder(Matamikya matamikya, const unsigned int orderId, F
 {
     return MATAMIKYA_SUCCESS;
 }
+
+MatamikyaResult mtmPrintInventory(Matamikya matamikya, FILE *output)
+{
+    return MATAMIKYA_NULL_ARGUMENT;
+}
