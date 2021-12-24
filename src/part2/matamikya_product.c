@@ -17,6 +17,7 @@ void *productCopy(void *from)
     new_product->customData = old_product->copyProdData(old_product->customData);
 
     new_product->id = old_product->id;
+    new_product->name = malloc(strlen(old_product->name) + 1);
     strcpy(new_product->name, old_product->name);
 
     return new_product;
@@ -24,7 +25,15 @@ void *productCopy(void *from)
 
 void productDelete(void *product)
 {
+    if (product == NULL)
+        return;
+    Product cur_product = (Product)product;
+    cur_product->freeProdData(cur_product->customData);
+    free(cur_product->name);
+
+    return;
 }
+
 Product productCreate(const unsigned int id, const char *name,
                       const double amount, const MatamikyaAmountType amountType,
                       const MtmProductData customData, MtmCopyData copyData,
