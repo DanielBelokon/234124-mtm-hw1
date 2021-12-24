@@ -127,7 +127,7 @@ MatamikyaResult mtmClearProduct(Matamikya matamikya, const unsigned int id)
         orderRemoveItem(order, id);
     }
 
-    if (!setRemove(matamikya->products, product))
+    if (setRemove(matamikya->products, product))
         return -1;
 
     return MATAMIKYA_SUCCESS;
