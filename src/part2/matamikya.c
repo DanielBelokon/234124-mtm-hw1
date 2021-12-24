@@ -106,12 +106,7 @@ MatamikyaResult mtmChangeProductAmount(Matamikya matamikya, const unsigned int i
     if ((product = getProductById(matamikya, id)) == NULL)
         return MATAMIKYA_PRODUCT_NOT_EXIST;
 
-    if (product->amount < amount)
-        return MATAMIKYA_INSUFFICIENT_AMOUNT;
-
-    product->amount += amount;
-
-    return MATAMIKYA_SUCCESS;
+    return productChangeAmount(product, amount);
 }
 
 MatamikyaResult mtmClearProduct(Matamikya matamikya, const unsigned int id)
