@@ -34,6 +34,7 @@ void *productCopy(void *from)
 
     new_product->amountType = old_product->amountType;
     new_product->amount = 0;
+    new_product->profit = old_product->profit;
 
     if (productChangeAmount(new_product, old_product->amount) != MATAMIKYA_SUCCESS)
     {
@@ -79,6 +80,7 @@ Product productCreate(const unsigned int id, const char *name,
 
     new_product->amountType = amountType;
     new_product->amount = 0;
+    new_product->profit = 0;
 
     if ((*result = productChangeAmount(new_product, amount)) != MATAMIKYA_SUCCESS)
     {
