@@ -106,10 +106,7 @@ Product productCreate(const unsigned int id, const char *name,
 }
 int productCompare(void *prod1, void *prod2)
 {
-    if (((Product)prod1)->id == ((Product)prod2)->id)
-        return 0;
-
-    return strcmp(((Product)prod1)->name, ((Product)prod2)->name);
+    return ((Product)prod1)->id - ((Product)prod2)->id;
 }
 int productGetId(Product product)
 {

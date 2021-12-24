@@ -14,11 +14,11 @@ struct Order_t
 
 void *orderCopy(void *from);
 void orderDelete(void *order);
-Order orderCreate(int id);
+Order orderCreate(unsigned int id);
 int orderCompare(void *, void *);
 int orderGetId(Order order);
-int orderAddItem(Order order, int id);
-int orderRemoveItem(Order order, int id);
-int orderChangeItemAmount(Order order, int id, double amount);
+int orderAddItem(Order order, unsigned int id);
+int orderRemoveItem(Order order, unsigned int id);
+int orderChangeItemAmount(Order order, unsigned int id, double amount);
 
 #endif

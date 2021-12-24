@@ -5,13 +5,13 @@
 
 int idCompare(void *a, void *b)
 {
-    return *(int *)a == *(int *)b;
+    return *(unsigned int *)a - *(unsigned int *)b;
 }
 
 void *idCopy(void *id)
 {
-    int *new_id = malloc(sizeof(int));
-    *new_id = *(int *)id;
+    unsigned int *new_id = malloc(sizeof(unsigned int));
+    *new_id = *(unsigned int *)id;
     return new_id;
 }
 
@@ -41,7 +41,7 @@ int orderCompare(void *order1, void *order2)
     return (((Order)order1)->id - ((Order)order2)->id);
 }
 
-Order orderCreate(int id)
+Order orderCreate(unsigned int id)
 {
     Order order = malloc(sizeof(*order));
 
@@ -51,7 +51,7 @@ Order orderCreate(int id)
     return order;
 }
 
-int orderAddItem(Order order, int id)
+int orderAddItem(Order order, unsigned int id)
 {
     if (order == NULL)
         return ORDER_NULL_ARG;
@@ -60,7 +60,7 @@ int orderAddItem(Order order, int id)
     return 0;
 }
 
-int orderRemoveItem(Order order, int id)
+int orderRemoveItem(Order order, unsigned int id)
 {
     if (order == NULL)
         return ORDER_NULL_ARG;
@@ -77,12 +77,12 @@ int orderGetId(Order order)
     return order->id;
 }
 
-int orderChangeItemAmount(Order order, int id, double amount)
+int orderChangeItemAmount(Order order, unsigned int id, const double amount)
 {
     if (order == NULL)
         return ORDER_NULL_ARG;
     if (!asContains(order->products, &id))
         asRegister(order->products, &id);
 
-    return asChangeAmount(order->products, &(order->id), amount);
+    return asChangeAmount(order->products, &id, amount);
 }
