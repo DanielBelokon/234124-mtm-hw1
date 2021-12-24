@@ -185,7 +185,16 @@ MatamikyaResult mtmChangeProductAmountInOrder(Matamikya matamikya, const unsigne
     if (order == NULL)
         return MATAMIKYA_ORDER_NOT_EXIST;
 
-    orderChangeItemAmount(order, productId, amount);
+    Product product = getProductById(matamikya, productId);
+    if (product == NULL)
+        return MATAMIKYA_PRODUCT_NOT_EXIST;
+    if (!isAmountValid(amount, product->amountType))
+        return MATAMIKYA_INVALID_AMOUNT;
+
+    AmountSetResult result = orderChangeItemAmount(order, productId, amount);
+
+    if (result == AS_INSUFFICIENT_AMOUNT)
+        return MATAMIKYA_INSUFFICIENT_AMOUNT;
 
     return MATAMIKYA_SUCCESS;
 }
