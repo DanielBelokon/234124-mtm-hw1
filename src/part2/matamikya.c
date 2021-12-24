@@ -143,7 +143,7 @@ MatamikyaResult mtmPrintBestSelling(Matamikya matamikya, FILE *output)
 {
     if (matamikya == NULL)
         return MATAMIKYA_NULL_ARGUMENT;
-
+    fprintf(output, "Best Selling Product:\n");
     int max_profits = 0;
     Product profitable_product = NULL;
 
@@ -157,8 +157,9 @@ MatamikyaResult mtmPrintBestSelling(Matamikya matamikya, FILE *output)
         }
     }
     if (profitable_product == NULL)
-        return MATAMIKYA_OUT_OF_MEMORY;
-    mtmPrintProductDetails(profitable_product->name, profitable_product->id, profitable_product->amount, 0, output);
+        fprintf(output, "none\n");
+    else
+        mtmPrintIncomeLine(profitable_product->name, profitable_product->id, max_profits, output);
 
     return MATAMIKYA_SUCCESS;
 }
