@@ -81,6 +81,8 @@ int orderChangeItemAmount(Order order, int id, double amount)
 {
     if (order == NULL)
         return ORDER_NULL_ARG;
+    if (!asContains(order->products, &id))
+        asRegister(order->products, &id);
 
     return asChangeAmount(order->products, &(order->id), amount);
 }
