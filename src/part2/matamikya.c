@@ -2,20 +2,22 @@
 #include "matamikya.h"
 #include "matamikya_order.h"
 #include "matamikya_product.h"
+#include "stdio.h"
 #include "matamikya_print.h"
 #include "amount_set.h"
 #include "set.h"
+#include "list.h"
 
 struct Matamikya_t
 {
-    Set products;
-    Set orders;
+    List products;
+    List orders;
     int order_index;
 };
 
 Product getProductById(Matamikya matamikya, int id)
 {
-    SET_FOREACH(Product, product, matamikya->products)
+    LIST_FOREACH(Product, product, matamikya->products)
     {
         if (productGetId(product) == id)
             return product;
@@ -26,7 +28,7 @@ Product getProductById(Matamikya matamikya, int id)
 
 Order getOrderById(Matamikya matamikya, int id)
 {
-    SET_FOREACH(Order, order, matamikya->orders)
+    LIST_FOREACH(Order, order, matamikya->orders)
     {
         if (orderGetId(order) == id)
             return order;
@@ -41,14 +43,14 @@ Matamikya matamikyaCreate()
     if (new_matamikya == NULL)
         return NULL;
 
-    Set orders = setCreate(orderCopy, orderDelete, orderCompare);
+    List orders = listCreate(orderCopy, orderDelete);
     if (orders == NULL)
         return NULL;
 
-    Set products = setCreate(productCopy, productDelete, productCompare);
+    List products = listCreate(productCopy, productDelete);
     if (products == NULL)
     {
-        setDestroy(orders);
+        listDestroy(orders);
         return NULL;
     }
 
@@ -64,8 +66,8 @@ void matamikyaDestroy(Matamikya matamikya)
     if (matamikya == NULL)
         return;
 
-    setDestroy(matamikya->products);
-    setDestroy(matamikya->orders);
+    listDestroy(matamikya->products);
+    listDestroy(matamikya->orders);
 
     return;
 }
@@ -90,7 +92,7 @@ MatamikyaResult mtmNewProduct(Matamikya matamikya, const unsigned int id, const 
                                         prodPrice, &result);
     if (new_product == NULL)
         return result;
-    setAdd(matamikya->products, new_product);
+    listInsertLast(matamikya->products, new_product);
 
     // inefficient but w/e, I'll deal with it later
     productDelete(new_product);
@@ -119,12 +121,12 @@ MatamikyaResult mtmClearProduct(Matamikya matamikya, const unsigned int id)
     if ((product = getProductById(matamikya, id)) == NULL)
         return MATAMIKYA_PRODUCT_NOT_EXIST;
 
-    SET_FOREACH(Order, order, matamikya->orders)
+    LIST_FOREACH(Order, order, matamikya->orders)
     {
         orderRemoveItem(order, id);
     }
 
-    if (setRemove(matamikya->products, product))
+    if (listRemoveCurrent(matamikya->products) != LIST_SUCCESS)
         return -1;
 
     return MATAMIKYA_SUCCESS;
@@ -138,7 +140,7 @@ MatamikyaResult mtmPrintBestSelling(Matamikya matamikya, FILE *output)
     int max_profits = 0;
     Product profitable_product = NULL;
 
-    SET_FOREACH(Product, product, matamikya->products)
+    LIST_FOREACH(Product, product, matamikya->products)
     {
         int cur_product_profits = 0;
         if (max_profits < (cur_product_profits = productGetProfit(product)))
@@ -163,8 +165,8 @@ unsigned int mtmCreateNewOrder(Matamikya matamikya)
 
     int index = matamikya->order_index++;
     Order order = orderCreate(index);
-    SetResult result = setAdd(matamikya->orders, order);
-    if (result == SET_SUCCESS)
+    ListResult result = listInsertLast(matamikya->orders, order);
+    if (result == LIST_SUCCESS)
         return index;
 
     return 0;
@@ -192,7 +194,8 @@ MatamikyaResult mtmChangeProductAmountInOrder(Matamikya matamikya, const unsigne
 
     if (result == AS_INSUFFICIENT_AMOUNT)
         return MATAMIKYA_INSUFFICIENT_AMOUNT;
-
+    if (result != AS_SUCCESS)
+        return MATAMIKYA_OUT_OF_MEMORY;
     return MATAMIKYA_SUCCESS;
 }
 
@@ -207,13 +210,26 @@ MatamikyaResult mtmShipOrder(Matamikya matamikya, const unsigned int orderId)
         return MATAMIKYA_ORDER_NOT_EXIST;
 
     // TODO: Keep warehouse unchanged if operation fails
-    AS_FOREACH(int *, product_id, order->products)
+    AS_FOREACH(unsigned int *, product_id, order->products)
     {
+        Product product = getProductById(matamikya, *product_id);
         double amount_out = 0;
+        if (product == NULL)
+        {
+            AS_FOREACH(unsigned int *, product_restore, order->products)
+            {
+                if (product_restore == product_id)
+                    break;
+                asGetAmount(order->products, product_id, &amount_out);
+                mtmChangeProductAmount(matamikya, *product_id, -amount_out);
+
+                product->profit -= product->getProdPrice(product->customData, amount_out);
+            }
+        }
+
         asGetAmount(order->products, product_id, &amount_out);
         mtmChangeProductAmount(matamikya, *product_id, amount_out);
 
-        Product product = getProductById(matamikya, *product_id);
         product->profit += product->getProdPrice(product->customData, amount_out);
     }
 
@@ -230,7 +246,7 @@ MatamikyaResult mtmCancelOrder(Matamikya matamikya, const unsigned int orderId)
     if (order == NULL)
         return MATAMIKYA_ORDER_NOT_EXIST;
 
-    setRemove(matamikya->orders, order);
+    listRemoveCurrent(matamikya->orders);
 
     return MATAMIKYA_SUCCESS;
 }
@@ -248,16 +264,15 @@ MatamikyaResult mtmPrintOrder(Matamikya matamikya, const unsigned int orderId, F
     mtmPrintOrderHeading(order->id, output);
 
     double totalPrice = 0;
-    AS_FOREACH(int *, productId, order->products)
+    AS_FOREACH(unsigned int *, productId, order->products)
     {
+        double amount = 2;
+        asGetAmount(order->products, productId, &amount);
         Product cur_product = getProductById(matamikya, *productId);
 
-        double amount = 0;
-        if (asGetAmount(order->products, productId, &amount) != AS_SUCCESS)
-            return MATAMIKYA_OUT_OF_MEMORY;
         double product_price = cur_product->getProdPrice(cur_product->customData, amount);
         totalPrice += product_price;
-        mtmPrintProductDetails(cur_product->name, cur_product->id, cur_product->amount, product_price, output);
+        mtmPrintProductDetails(cur_product->name, cur_product->id, amount, product_price, output);
     }
 
     mtmPrintOrderSummary(totalPrice, output);
@@ -266,10 +281,13 @@ MatamikyaResult mtmPrintOrder(Matamikya matamikya, const unsigned int orderId, F
 
 MatamikyaResult mtmPrintInventory(Matamikya matamikya, FILE *output)
 {
-    SET_FOREACH(Product, product, matamikya->products)
+    listSort(matamikya->products, productCompare);
+    fprintf(output, "Inventory Status:\n");
+    LIST_FOREACH(Product, product, matamikya->products)
     {
-        double product_price = product->getProdPrice(product->customData, product->amount);
-        mtmPrintProductDetails(product->name, product->id, product->amount, product_price, output);
+        double product_price = product->getProdPrice(product->customData, 1);
+        double amount = product->amount;
+        mtmPrintProductDetails(product->name, product->id, amount, product_price, output);
     }
 
     return MATAMIKYA_SUCCESS;
