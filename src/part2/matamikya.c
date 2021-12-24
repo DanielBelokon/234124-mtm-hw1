@@ -80,14 +80,15 @@ MatamikyaResult mtmNewProduct(Matamikya matamikya, const unsigned int id, const 
     if (getProductById(matamikya, id))
         return MATAMIKYA_PRODUCT_ALREADY_EXIST;
 
+    MatamikyaResult result;
     Product new_product = productCreate(id,
                                         name,
                                         amount,
                                         amountType,
                                         customData, copyData, freeData,
-                                        prodPrice);
+                                        prodPrice, &result);
     if (new_product == NULL)
-        return MATAMIKYA_OUT_OF_MEMORY;
+        return result;
     setAdd(matamikya->products, new_product);
 
     // inefficient but w/e, I'll deal with it later

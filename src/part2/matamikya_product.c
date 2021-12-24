@@ -37,14 +37,22 @@ void productDelete(void *product)
 Product productCreate(const unsigned int id, const char *name,
                       const double amount, const MatamikyaAmountType amountType,
                       const MtmProductData customData, MtmCopyData copyData,
-                      MtmFreeData freeData, MtmGetProductPrice prodPrice)
+                      MtmFreeData freeData, MtmGetProductPrice prodPrice,
+                      MatamikyaResult *result)
 {
+    *result = MATAMIKYA_OUT_OF_MEMORY;
     Product new_product = malloc(sizeof(*new_product));
     if (new_product == NULL)
         return NULL;
 
-    new_product->amount = amount;
     new_product->amountType = amountType;
+    new_product->amount = 0;
+
+    if ((*result = productChangeAmount(new_product, amount)) != MATAMIKYA_SUCCESS)
+    {
+        free(new_product);
+        return NULL;
+    }
     new_product->copyProdData = copyData;
     new_product->freeProdData = freeData;
     new_product->getProdPrice = prodPrice;
@@ -55,12 +63,14 @@ Product productCreate(const unsigned int id, const char *name,
     new_product->name = malloc(strlen(name) + 1);
     if (new_product->name == NULL)
     {
+        *result = MATAMIKYA_OUT_OF_MEMORY;
         productDelete(new_product);
         return NULL;
     }
 
     strcpy(new_product->name, name);
 
+    *result = MATAMIKYA_SUCCESS;
     return new_product;
 }
 int productCompare(void *prod1, void *prod2)

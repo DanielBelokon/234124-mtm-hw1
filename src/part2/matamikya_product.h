@@ -24,7 +24,8 @@ void productDelete(void *product);
 Product productCreate(const unsigned int id, const char *name,
                       const double amount, const MatamikyaAmountType amountType,
                       const MtmProductData customData, MtmCopyData copyData,
-                      MtmFreeData freeData, MtmGetProductPrice prodPrice);
+                      MtmFreeData freeData, MtmGetProductPrice prodPrice,
+                      MatamikyaResult *result);
 int productCompare(void *, void *);
 int productGetId(Product product);
 int productGetProfit(Product product);
