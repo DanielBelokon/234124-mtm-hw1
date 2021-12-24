@@ -32,8 +32,15 @@ void *productCopy(void *from)
     Product new_product = malloc(sizeof(*new_product));
     Product old_product = (Product)from;
 
-    new_product->amount = old_product->amount;
     new_product->amountType = old_product->amountType;
+    new_product->amount = 0;
+
+    if (productChangeAmount(new_product, old_product->amount) != MATAMIKYA_SUCCESS)
+    {
+        free(new_product);
+        return NULL;
+    }
+
     new_product->copyProdData = old_product->copyProdData;
     new_product->freeProdData = old_product->freeProdData;
     new_product->getProdPrice = old_product->getProdPrice;
