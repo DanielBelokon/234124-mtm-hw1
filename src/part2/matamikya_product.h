@@ -29,5 +29,6 @@ Product productCreate(const unsigned int id, const char *name,
 int productCompare(void *, void *);
 int productGetId(Product product);
 int productGetProfit(Product product);
+bool isAmountValid(const double amount, MatamikyaAmountType type);
 
 #endif

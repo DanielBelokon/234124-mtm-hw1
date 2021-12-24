@@ -3,6 +3,30 @@
 #include <string.h>
 #include <stdlib.h>
 
+bool isAmountValid(const double amount, MatamikyaAmountType type)
+{
+    if (type == MATAMIKYA_ANY_AMOUNT)
+        return true;
+
+    double remainder = amount - ((int)amount);
+    double epsilon = 0.001 + (type == MATAMIKYA_HALF_INTEGER_AMOUNT) * 0.5;
+
+    return (remainder <= epsilon || 1 - remainder >= 1 - epsilon);
+}
+
+MatamikyaResult productChangeAmount(Product product, const double amount)
+{
+    if (product->amount < -amount)
+        return MATAMIKYA_INSUFFICIENT_AMOUNT;
+
+    if (isAmountValid(amount, product->amountType))
+        product->amount += amount;
+    else
+        return MATAMIKYA_INVALID_AMOUNT;
+
+    return MATAMIKYA_SUCCESS;
+}
+
 void *productCopy(void *from)
 {
     Product new_product = malloc(sizeof(*new_product));
