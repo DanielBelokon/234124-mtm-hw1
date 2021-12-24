@@ -227,7 +227,7 @@ MatamikyaResult mtmCancelOrder(Matamikya matamikya, const unsigned int orderId)
 
 MatamikyaResult mtmPrintOrder(Matamikya matamikya, const unsigned int orderId, FILE *output)
 {
-    return MATAMIKYA_SUCCESS;
+    return MATAMIKYA_NULL_ARGUMENT;
 }
 
 MatamikyaResult mtmPrintInventory(Matamikya matamikya, FILE *output)
