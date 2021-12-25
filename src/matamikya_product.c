@@ -167,10 +167,9 @@ int productGetId(Product product)
     return product->id;
 }
 
-int productGetProfit(Product product)
+double productGetProfit(Product product)
 {
     if (product == NULL)
-        return PRODUCT_NULL_ARG;
-
+        return 0;
     return product->profit;
 }

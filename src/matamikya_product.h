@@ -28,7 +28,7 @@ Product productCreate(const unsigned int id, const char *name,
                       MatamikyaResult *result);
 int productCompare(void *, void *);
 int productGetId(Product product);
-int productGetProfit(Product product);
+double productGetProfit(Product product);
 MatamikyaResult productChangeAmount(Product product, const double amount);
 
 bool isAmountValid(const double amount, MatamikyaAmountType type);

@@ -145,13 +145,13 @@ MatamikyaResult mtmPrintBestSelling(Matamikya matamikya, FILE *output)
     if (matamikya == NULL || output == NULL)
         return MATAMIKYA_NULL_ARGUMENT;
     fprintf(output, "Best Selling Product:\n");
-    int max_profits = 0;
+    double max_profits = 0;
     Product profitable_product = NULL;
 
     LIST_FOREACH(Product, product, matamikya->products)
     {
-        int cur_product_profits = 0;
-        if (max_profits < (cur_product_profits = productGetProfit(product)))
+        double cur_product_profits = productGetProfit(product);
+        if (max_profits < cur_product_profits)
         {
             max_profits = cur_product_profits;
             profitable_product = product;
