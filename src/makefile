@@ -1,46 +1,41 @@
 CC = gcc
 AS_STR_OBJS = amount_set_str.o amount_set_str_tests.o amount_set_str_main.o
-MTMIKYA_OBJS = matamikya.o matamikya_tests.o matamikya_product.o matamikya_order.o matamikya_print.o matamikya_main.o
+MTMIKYA_OBJS = matamikya.o  matamikya_product.o matamikya_order.o matamikya_print.o tests/matamikya_main.o tests/matamikya_tests.o
+MTM_EXE = matamikya
+AS_EXE = amount_set_str
 LIB_FLAG = -L. -las -lmtm
 DEBUG_FLAG = -g
 COMP_FLAG = -std=c99 -Wall -Werror -pedantic-errors
 
+# Generic rule
+
+%.o: %.c
+	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $< -o $@
+
 # MATAMIKYA 
 
-matamikya: $(MTMIKYA_OBJS)
+$(MTM_EXE): $(MTMIKYA_OBJS)
 	$(CC) $(DEBUG_FLAG) $(MTMIKYA_OBJS) $(LIB_FLAG) -no-pie -o $@
 
 matamikya.o: matamikya.c matamikya.h
-	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $*.c
-
-matamikya_product.o: matamikya_product.c matamikya_product.h
-	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $*.c
-
 matamikya_order.o: matamikya_order.c matamikya_order.h
-	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $*.c
-
 matamikya_print.o: matamikya_print.c matamikya_print.h
-	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $*.c
+matamikya_product.o: matamikya_product.c matamikya_product.h
 
-matamikya_tests.o: tests/matamikya_tests.c tests/matamikya_tests.h
-	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) tests/$*.c
+tests/%.o: tests/%.c
+	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $< -o $@
 
-matamikya_main.o: tests/matamikya_main.c
-	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) tests/$*.c
+tests/matamikya_tests.o: tests/matamikya_tests.c tests/matamikya_tests.h
+tests/matamikya_main.o: tests/matamikya_main.c
 
 # AMOUNT SET STR
 
-amount_set_str : $(AS_STR_OBJS)
+$(AS_EXE) : $(AS_STR_OBJS)
 	$(CC) $(DEBUG_FLAG) $(AS_STR_OBJS) -o $@
 
 amount_set_str.o: amount_set_str.c amount_set_str.h
-	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $*.c
-
 amount_set_str_main.o: amount_set_str_main.c amount_set_str_tests.h
-	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $*.c
-
 amount_set_str_tests.o: amount_set_str_tests.c amount_set_str.h
-	$(CC) -c $(DEBUG_FLAG) $(COMP_FLAG) $*.c
 
 clean:
-	rm -f $(OBJS) $(AS_STR_OBJS) $(MTMIKYA_OBJS) $(EXEC)
+	rm -f $(OBJS) $(AS_STR_OBJS) $(MTMIKYA_OBJS)
