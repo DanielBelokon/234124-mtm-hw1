@@ -220,31 +220,51 @@ MatamikyaResult mtmShipOrder(Matamikya matamikya, const unsigned int orderId)
     if (order == NULL)
         return MATAMIKYA_ORDER_NOT_EXIST;
 
+    MatamikyaResult result = AS_SUCCESS;
+    double amount_out = 0;
+    unsigned int last_prod;
+
     // TODO: Keep warehouse unchanged if operation fails
     AS_FOREACH(unsigned int *, product_id, order->products)
     {
         Product product = getProductById(matamikya, *product_id);
-        double amount_out = 0;
+        last_prod = *product_id;
+        amount_out = 0;
         if (product == NULL)
         {
-            AS_FOREACH(unsigned int *, product_restore, order->products)
-            {
-                if (product_restore == product_id)
-                    break;
-                asGetAmount(order->products, product_id, &amount_out);
-                mtmChangeProductAmount(matamikya, *product_id, -amount_out);
-
-                product->profit -= product->getProdPrice(product->customData, amount_out);
-            }
+            result = MATAMIKYA_PRODUCT_NOT_EXIST;
+            break;
         }
 
         asGetAmount(order->products, product_id, &amount_out);
-        mtmChangeProductAmount(matamikya, *product_id, amount_out);
+        if ((result = mtmChangeProductAmount(matamikya, *product_id, -amount_out)) != MATAMIKYA_SUCCESS)
+            break;
 
         product->profit += product->getProdPrice(product->customData, amount_out);
     }
+    if (result != MATAMIKYA_SUCCESS)
+    {
+        AS_FOREACH(unsigned int *, product_restore, order->products)
+        {
+            if (*product_restore == last_prod)
+                break;
 
-    return MATAMIKYA_SUCCESS;
+            Product product = getProductById(matamikya, *product_restore);
+            double amount_out = 0;
+            if (product == NULL)
+                break;
+
+            asGetAmount(order->products, product_restore, &amount_out);
+            mtmChangeProductAmount(matamikya, *product_restore, amount_out);
+
+            product->profit -= product->getProdPrice(product->customData, amount_out);
+        }
+    }
+
+    if (result == MATAMIKYA_SUCCESS)
+        mtmCancelOrder(matamikya, orderId);
+
+    return result;
 }
 
 MatamikyaResult mtmCancelOrder(Matamikya matamikya, const unsigned int orderId)
