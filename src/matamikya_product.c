@@ -3,20 +3,46 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define EPSILON 0.001
+
 bool isAmountValid(const double amount, MatamikyaAmountType type)
 {
+    bool valid = false;
+
     if (type == MATAMIKYA_ANY_AMOUNT)
         return true;
+    double abs_amount = amount < 0 ? -amount : amount;
+    double remainder = abs_amount - ((int)abs_amount);
 
-    double remainder = amount - ((int)amount);
-    double epsilon = 0.001 + (type == MATAMIKYA_HALF_INTEGER_AMOUNT) * 0.5;
+    int round = remainder > 0.5 ? (int)(abs_amount + 1) : (int)abs_amount;
+    double epsilon_half = EPSILON + 0.5;
 
-    return (remainder <= epsilon || 1 - remainder >= 1 - epsilon);
+    double diff = abs_amount - round;
+
+    double absdiff = diff < 0 ? -diff : diff;
+
+    if (type == MATAMIKYA_HALF_INTEGER_AMOUNT)
+        valid = (absdiff <= epsilon_half && absdiff >= 1 - epsilon_half);
+
+    return (absdiff <= EPSILON) || valid;
+}
+
+bool isNameValid(const char *name)
+{
+    if (name == NULL)
+        return false;
+
+    if ((*name <= 'z' && *name >= 'a') ||
+        (*name >= '0' && *name <= '9') ||
+        (*name >= 'A' && *name <= 'Z'))
+        return true;
+
+    return false;
 }
 
 MatamikyaResult productChangeAmount(Product product, const double amount)
 {
-    if (product->amount < -amount)
+    if (product->amount + amount < -EPSILON)
         return MATAMIKYA_INSUFFICIENT_AMOUNT;
 
     if (isAmountValid(amount, product->amountType))
@@ -74,6 +100,28 @@ Product productCreate(const unsigned int id, const char *name,
                       MatamikyaResult *result)
 {
     *result = MATAMIKYA_OUT_OF_MEMORY;
+    if (name == NULL ||
+        customData == NULL ||
+        copyData == NULL ||
+        freeData == NULL ||
+        prodPrice == NULL)
+    {
+        *result = MATAMIKYA_NULL_ARGUMENT;
+        return NULL;
+    }
+
+    if (!isNameValid(name))
+    {
+        *result = MATAMIKYA_INVALID_NAME;
+        return NULL;
+    }
+
+    if (amount < 0)
+    {
+        *result = MATAMIKYA_INVALID_AMOUNT;
+        return NULL;
+    }
+
     Product new_product = malloc(sizeof(*new_product));
     if (new_product == NULL)
         return NULL;
