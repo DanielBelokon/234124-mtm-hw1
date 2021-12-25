@@ -87,9 +87,6 @@ MatamikyaResult mtmNewProduct(Matamikya matamikya, const unsigned int id, const 
     if (matamikya == NULL)
         return MATAMIKYA_NULL_ARGUMENT;
 
-    if (getProductById(matamikya, id))
-        return MATAMIKYA_PRODUCT_ALREADY_EXIST;
-
     MatamikyaResult result;
     Product new_product = productCreate(id,
                                         name,
@@ -99,6 +96,10 @@ MatamikyaResult mtmNewProduct(Matamikya matamikya, const unsigned int id, const 
                                         prodPrice, &result);
     if (new_product == NULL)
         return result;
+
+    if (getProductById(matamikya, id))
+        return MATAMIKYA_PRODUCT_ALREADY_EXIST;
+
     listInsertLast(matamikya->products, new_product);
 
     // inefficient but w/e, I'll deal with it later
@@ -141,7 +142,7 @@ MatamikyaResult mtmClearProduct(Matamikya matamikya, const unsigned int id)
 
 MatamikyaResult mtmPrintBestSelling(Matamikya matamikya, FILE *output)
 {
-    if (matamikya == NULL)
+    if (matamikya == NULL || output == NULL)
         return MATAMIKYA_NULL_ARGUMENT;
     fprintf(output, "Best Selling Product:\n");
     int max_profits = 0;
@@ -201,12 +202,8 @@ MatamikyaResult mtmChangeProductAmountInOrder(Matamikya matamikya, const unsigne
     if (!isAmountValid(amount, product->amountType))
         return MATAMIKYA_INVALID_AMOUNT;
 
-    AmountSetResult result = orderChangeItemAmount(order, productId, amount);
+    orderChangeItemAmount(order, productId, amount);
 
-    if (result == AS_INSUFFICIENT_AMOUNT)
-        return MATAMIKYA_INSUFFICIENT_AMOUNT;
-    if (result != AS_SUCCESS)
-        return MATAMIKYA_OUT_OF_MEMORY;
     return MATAMIKYA_SUCCESS;
 }
 
@@ -284,7 +281,7 @@ MatamikyaResult mtmCancelOrder(Matamikya matamikya, const unsigned int orderId)
 
 MatamikyaResult mtmPrintOrder(Matamikya matamikya, const unsigned int orderId, FILE *output)
 {
-    if (matamikya == NULL)
+    if (matamikya == NULL || output == NULL)
         return MATAMIKYA_NULL_ARGUMENT;
 
     Order order = getOrderById(matamikya, orderId);
@@ -312,6 +309,9 @@ MatamikyaResult mtmPrintOrder(Matamikya matamikya, const unsigned int orderId, F
 
 MatamikyaResult mtmPrintInventory(Matamikya matamikya, FILE *output)
 {
+    if (matamikya == NULL || output == NULL)
+        return MATAMIKYA_NULL_ARGUMENT;
+
     listSort(matamikya->products, productCompare);
     fprintf(output, "Inventory Status:\n");
     LIST_FOREACH(Product, product, matamikya->products)
