@@ -19,6 +19,6 @@ int orderCompare(void *, void *);
 int orderGetId(Order order);
 int orderAddItem(Order order, unsigned int id);
 int orderRemoveItem(Order order, unsigned int id);
-int orderChangeItemAmount(Order order, unsigned int id, double amount);
+AmountSetResult orderChangeItemAmount(Order order, unsigned int id, double amount);
 
 #endif

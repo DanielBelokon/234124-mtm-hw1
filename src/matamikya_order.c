@@ -3,6 +3,8 @@
 #include "amount_set.h"
 #include "matamikya_product.h"
 
+#define EPSILON 0.001
+
 int idCompare(void *a, void *b)
 {
     return *(unsigned int *)a - *(unsigned int *)b;
@@ -88,12 +90,23 @@ int orderGetId(Order order)
     return order->id;
 }
 
-int orderChangeItemAmount(Order order, unsigned int id, const double amount)
+AmountSetResult orderChangeItemAmount(Order order, unsigned int id, const double amount)
 {
     if (order == NULL)
         return ORDER_NULL_ARG;
     if (!asContains(order->products, &id))
+    {
+        if (amount <= 0)
+            return AS_SUCCESS;
         asRegister(order->products, &id);
+    }
+    else
+    {
+        double current_amount = 0;
+        asGetAmount(order->products, &id, &current_amount);
+        if (current_amount + amount < EPSILON)
+            return asDelete(order->products, &id);
+    }
 
     return asChangeAmount(order->products, &id, amount);
 }
