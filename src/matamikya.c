@@ -88,6 +88,10 @@ MatamikyaResult mtmNewProduct(Matamikya matamikya, const unsigned int id, const 
         return MATAMIKYA_NULL_ARGUMENT;
 
     MatamikyaResult result;
+
+    if (getProductById(matamikya, id))
+        return MATAMIKYA_PRODUCT_ALREADY_EXIST;
+
     Product new_product = productCreate(id,
                                         name,
                                         amount,
@@ -96,9 +100,6 @@ MatamikyaResult mtmNewProduct(Matamikya matamikya, const unsigned int id, const 
                                         prodPrice, &result);
     if (new_product == NULL)
         return result;
-
-    if (getProductById(matamikya, id))
-        return MATAMIKYA_PRODUCT_ALREADY_EXIST;
 
     listInsertLast(matamikya->products, new_product);
 
