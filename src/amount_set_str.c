@@ -123,7 +123,7 @@ bool asContains(AmountSet set, const char *element)
         return false;
 
     AmountSetNode last_position = set->current_node;
-    bool operation_result = asFindNode(set, element);
+    AmountSetResult operation_result = asFindNode(set, element);
     set->current_node = last_position;
 
     return (operation_result == AS_SUCCESS);
