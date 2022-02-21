@@ -99,6 +99,9 @@ AmountSet asCopy(AmountSet set)
             asDestroy(new_set);
             return NULL;
         }
+        double amount;
+        asGetAmount(set, current_element, &amount);
+        asChangeAmount(new_set, current_element, amount);
     };
 
     set->current_node = NULL;
