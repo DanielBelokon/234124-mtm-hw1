@@ -1,0 +1,25 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    defaults:
+          run:
+            working-directory: ./src
+    steps:
+    - uses: actions/checkout@v2
+    - name: make
+      run: make
+    - name: make amount_set_str
+      run: make amount_set_str
+    - name: run matamikya
+      run: ./matamikya
+    - name: run as
+      run: ./amount_set_str
