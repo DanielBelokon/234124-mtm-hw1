@@ -88,10 +88,6 @@ MatamikyaResult mtmNewProduct(Matamikya matamikya, const unsigned int id, const 
         return MATAMIKYA_NULL_ARGUMENT;
 
     MatamikyaResult result;
-
-    if (getProductById(matamikya, id))
-        return MATAMIKYA_PRODUCT_ALREADY_EXIST;
-
     Product new_product = productCreate(id,
                                         name,
                                         amount,
@@ -101,12 +97,17 @@ MatamikyaResult mtmNewProduct(Matamikya matamikya, const unsigned int id, const 
     if (new_product == NULL)
         return result;
 
-    listInsertLast(matamikya->products, new_product);
-
+    if (getProductById(matamikya, id))
+        result = MATAMIKYA_PRODUCT_ALREADY_EXIST;
+    else
+    {
+        listInsertLast(matamikya->products, new_product);
+        result = MATAMIKYA_SUCCESS;
+    }
     // inefficient but w/e, I'll deal with it later
     productDelete(new_product);
 
-    return MATAMIKYA_SUCCESS;
+    return result;
 }
 
 MatamikyaResult mtmChangeProductAmount(Matamikya matamikya, const unsigned int id, const double amount)
