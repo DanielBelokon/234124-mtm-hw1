@@ -23,3 +23,9 @@ jobs:
       run: ./matamikya
     - name: run as
       run: ./amount_set_str
+    - name: zip
+      run: zip hw1_sol amount_set_str.c amount_set_str_main.c amount_set_str_tests.c amount_set_str_tests.h matamikya* makefile ../dry.pdf
+    - name: final check
+      run: ../final_check.py ./src/hw1_sol.zip
+  
+  
