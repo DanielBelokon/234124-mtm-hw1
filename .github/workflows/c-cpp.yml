@@ -24,7 +24,7 @@ jobs:
     - name: run as
       run: ./amount_set_str
     - name: zip
-      run: zip hw1_sol amount_set_str.c amount_set_str_main.c amount_set_str_tests.c amount_set_str_tests.h matamikya* makefile ../dry.pdf
+      run: zip hw1_sol amount_set_str.c amount_set_str_main.c amount_set_str_tests.c amount_set_str_tests.h matamikya.c matamikya_product.c matamikya_product.h matamikya_order.c matamikya_order.h makefile dry.pdf
     - name: setup python
       uses: actions/setup-python@v2
       with:
