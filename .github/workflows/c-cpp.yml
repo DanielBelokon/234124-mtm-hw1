@@ -30,6 +30,6 @@ jobs:
       with:
           python-version: 3.8 #install the python needed
     - name: final check
-      run: python ../final_check.py ./src/hw1_sol.zip
+      run: python ../final_check.py ./hw1_sol.zip
   
   
