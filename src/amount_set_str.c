@@ -109,7 +109,7 @@ AmountSet asCopy(AmountSet set)
 int asGetSize(AmountSet set)
 {
     if (!set)
-        return 0;
+        return -1;
 
     return set->size;
 }
