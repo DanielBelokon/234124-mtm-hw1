@@ -47,7 +47,7 @@ EXEC_NAME_PART2 = 'matamikya'
 GCC_ARGS_PART2 = BASIC_GCC_ARGS.copy()
 # list of pairs: (subdirectory, glob pattern)
 GCC_SOURCES_PART2 = [('', 'matamikya*.c' ), (TESTS_DIR, 'matamikya*.c')]
-GCC_ARGS_SUFFIX_PART2 = ['-L.', '-lm', '-lmtm', '-las']
+GCC_ARGS_SUFFIX_PART2 = ['-L.', '-lm', '-lmtm', '-las', '-no-pie']
 
 
 
