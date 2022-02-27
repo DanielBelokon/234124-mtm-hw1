@@ -333,11 +333,11 @@ bool testGetNext()
     AS_FOREACH(char *, item, set)
     {
         // Functions where iterator state should be unchanged
-        asContains(set, "nonexistant");
+        asContains(set, "nonexistent");
         asGetSize(set);
-        asChangeAmount(set, "nonexistant", 1);
+        asChangeAmount(set, "nonexistent", 1);
         double temp = 0;
-        asGetAmount(set, "nonexistant", &temp);
+        asGetAmount(set, "nonexistent", &temp);
         iterations++;
     }
     asDestroy(set);
