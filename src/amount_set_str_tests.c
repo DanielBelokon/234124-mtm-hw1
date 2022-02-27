@@ -50,6 +50,11 @@ bool testDestroy()
 bool testCopy()
 {
     AmountSet source_set = CreateDummy(5);
+    int i = 10;
+    AS_FOREACH(char *, item, source_set)
+    {
+        asChangeAmount(source_set, item, i--);
+    }
     AmountSet dest_set = asCopy(source_set);
     bool passed = true;
 
@@ -308,15 +313,35 @@ bool testClear()
 bool testGetFirst()
 {
     bool passed = true;
+    AmountSet set = CreateDummy(5);
 
+    if (asGetFirst(set) == NULL)
+    {
+        printf("First item is NULL.\n");
+        passed = false;
+    }
+
+    asDestroy(set);
     return passed;
 }
 
 bool testGetNext()
 {
-    bool passed = true;
-
-    return passed;
+    AmountSet set = CreateDummy(5);
+    asGetFirst(set);
+    int iterations = 0;
+    AS_FOREACH(char *, item, set)
+    {
+        // Functions where iterator state should be unchanged
+        asContains(set, "nonexistant");
+        asGetSize(set);
+        asChangeAmount(set, "nonexistant", 1);
+        double temp = 0;
+        asGetAmount(set, "nonexistant", &temp);
+        iterations++;
+    }
+    asDestroy(set);
+    return (iterations == 5);
 }
 
 bool testOrdered()
